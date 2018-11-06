@@ -35,6 +35,15 @@ Game::Game(RenderWindow* wnd) : window(wnd), player1Turn(true), turnEnded(true),
 		balls.push_back(b);
 	}
 
+	bottomField.setPosition(Vector2f(0.f, float(H)));
+	bottomField.setSize(Vector2f(float(W), float(Hfield)));
+
+	rightField.setFillColor(Color::White);
+	rightField.setPosition(Vector2f(float(W), 0.f));
+	rightField.setSize(Vector2f(float(Wfield), float(H + Hfield)));
+
+
+
 	//Creating walls
 	{
 		float radius = 1.f;
@@ -405,20 +414,17 @@ void Game::positionTheStick() {
 }
 
 void Game::gameDraw() {
-	RectangleShape field;
-	field.setFillColor(player1Turn ? P1_TURN_COLOR : P2_TURN_COLOR);
+	bottomField.setFillColor(player1Turn ? P1_TURN_COLOR : P2_TURN_COLOR);
 
 	if (gameIsEnded)
-		field.setFillColor(winningPlayer % 2 ? P1_WIN_COLOR : P2_WIN_COLOR);
+		bottomField.setFillColor(winningPlayer % 2 ? P1_WIN_COLOR : P2_WIN_COLOR);
 	
-	field.setPosition(Vector2f(0.f, float(H)));
-	field.setSize(Vector2f(float(W), float(Hfield)));
-	
-	window->draw(sprites[BACKGROUND]); // drawing background
+	window->draw(sprites[0]); // drawing background
 	for (auto a : balls)
 		if (a->life) window->draw(*(a->circle)); // drawing balls
 
-	window->draw(field);
+	window->draw(bottomField);
+	window->draw(rightField);
 	window->draw(text);
 
 	for (int i = 1; i < GRAPHICS; i++)

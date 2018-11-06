@@ -54,4 +54,4 @@
 
 #define P1_WIN_COLOR Color(255, 100, 100, 255)
 #define P2_WIN_COLOR Color(100, 100, 255, 255)
-const unsigned int W = 1085, H = 600, Hfield = 80;
+const unsigned int W = 1085, Wfield = 150, H = 600, Hfield = 80;

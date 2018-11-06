@@ -8,7 +8,7 @@
 using namespace sf;
 
 class Game {
-protected:
+public:
 	sf::RenderWindow* window;
 
 	sf::Font font;
@@ -25,6 +25,9 @@ protected:
 
 	Texture t[GRAPHICS];
 	Sprite sprites[GRAPHICS];
+
+	RectangleShape bottomField;
+	RectangleShape rightField;
 
 	SoundBuffer buffer;
 	Sound sound;
