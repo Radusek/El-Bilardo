@@ -54,4 +54,17 @@
 
 #define P1_WIN_COLOR Color(255, 100, 100, 255)
 #define P2_WIN_COLOR Color(100, 100, 255, 255)
+
+enum TxtEnum{
+	TurnInfo,
+	Score,
+	P1Score,
+	Colon,
+	P2Score,
+	BallsThisTurn,
+	BallsLeft,
+	EnumSize
+};
+#define TEXTS EnumSize
+
 const unsigned int W = 1085, Wfield = 150, H = 600, Hfield = 80;

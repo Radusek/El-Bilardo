@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game(RenderWindow* wnd) : window(wnd), player1Turn(true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false)
+Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn(true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS)
 {
 	for (int i = 0; i < 2; i++)
 	{
@@ -10,9 +10,13 @@ Game::Game(RenderWindow* wnd) : window(wnd), player1Turn(true), turnEnded(true),
 	}
 
 	font.loadFromFile("font/micross.ttf");
-	text.setFont(font);
-	text.setCharacterSize(TEXT_SIZE);
-	text.setFillColor(Color::Black);
+	for (auto &t : text) {
+		t.setFont(font);
+		t.setFillColor(Color::Black);
+	}
+
+	text[TurnInfo].setCharacterSize(TEXT_SIZE);
+	//text[BALLS_THIS_TURN].setCharacterSize(TEXT_SIZE);
 
 	buffer.loadFromFile("wav/hit.wav");
 	sound.setBuffer(buffer);
@@ -35,14 +39,12 @@ Game::Game(RenderWindow* wnd) : window(wnd), player1Turn(true), turnEnded(true),
 		balls.push_back(b);
 	}
 
-	bottomField.setPosition(Vector2f(0.f, float(H)));
-	bottomField.setSize(Vector2f(float(W), float(Hfield)));
+	bottomField.setPosition(Vector2f(0.f, 0.f));
+	bottomField.setSize(Vector2f(float(W), float(H + Hfield)));
 
 	rightField.setFillColor(Color::White);
 	rightField.setPosition(Vector2f(float(W), 0.f));
 	rightField.setSize(Vector2f(float(Wfield), float(H + Hfield)));
-
-
 
 	//Creating walls
 	{
@@ -115,6 +117,7 @@ void Game::cursorPosRelatedComputing(bool buttonRelease)
 			if (buttonRelease) {
 				setWhiteBallSpeed(speed);
 				turnEnded = false;
+				for (auto &n : nBallsInThisTurn) n = 0;
 			}
 		}
 		if (buttonRelease) aiming = false;
@@ -265,6 +268,7 @@ void Game::holeCheck() {
 						{
 							winningPlayer = player1Turn + 1;
 							gameIsEnded = true;
+							playerScore[winningPlayer - 1]++;
 						}
 					}
 					else if (a->circle->getFillColor() != Color::White)
@@ -322,36 +326,70 @@ void Game::gameUpdate() {
 
 void Game::showText()
 {
-	if (gameIsEnded) {
-		text.setString("Player " + std::to_string(winningPlayer) + " wins!");
-	}
-	else if (turnEnded) {
-		String playerText;
-		String color = "";
-		String holes[6] = { L" (left upper hole)", L" (upper hole)", L" (right upper hole)",
-						    L" (left lower hole)", L" (lower hole)", L" (right lower hole)", };
+	#pragma region turnInfo
 
-		playerText = player1Turn ? "1" : "2";
+		if (gameIsEnded) {
+			text[TurnInfo].setString("Player " + std::to_string(winningPlayer) + " wins!");
+		}
+		else if (turnEnded) {
+			String playerText;
+			String color = "";
+			String holes[N_HOLES] = { L" (left upper hole)", L" (upper hole)", L" (right upper hole)",
+								L" (left lower hole)", L" (lower hole)", L" (right lower hole)", };
 
-		if (playersHaveColors)
+			playerText = player1Turn ? "1" : "2";
+
+			if (playersHaveColors)
+			{
+				bool bColor = player1HasHalfs == player1Turn;
+
+				if (nBallsLeft[bColor] > 0)
+					color = bColor ? L" (half)" : L" (full)";
+				else
+					color = holes[nBlackHole[!player1Turn]];
+			}
+
+			text[TurnInfo].setString("Player's " + playerText + " turn" + color);
+		}
+		else
 		{
-			bool bColor = player1HasHalfs == player1Turn;
-
-			if (nBallsLeft[bColor] > 0)
-				color = bColor ? L" (half)" : L" (full)";
-			else
-				color = holes[nBlackHole[!player1Turn]];
+			text[TurnInfo].setString("Turn in progress");
 		}
 
-		text.setString("Player's " + playerText + " turn" + color);
-	}
-	else
-	{
-		text.setString("Turn in progress");
-	}
+	#pragma endregion
 
-	text.setOrigin(float(int(text.getLocalBounds().width / 2)), float(int(text.getLocalBounds().height / 2 + TEXT_SIZE / 4)));
-	text.setPosition(W / 2, H + Hfield / 2);
+	//TODO tekst po prawej
+		std::string s = "SCORE";
+		text[Score].setString(s);
+
+		s = std::to_string(playerScore[PLAYER_1]);
+		text[P1Score].setString(s);
+
+		s = ":";
+		text[Colon].setString(s);
+
+		s = std::to_string(playerScore[PLAYER_2]);
+		text[P2Score].setString(s);
+
+		s = "HALF: " + std::to_string(nBallsInThisTurn[HALF]) + "\nFULL: " + std::to_string(nBallsInThisTurn[FULL]);		
+		text[BallsThisTurn].setString(s);
+
+		s = "half left: " + std::to_string(nBallsLeft[HALF]) + "\nfull left: " + std::to_string(nBallsLeft[FULL]);
+		text[BallsLeft].setString(s);
+
+		text[TurnInfo].setPosition(W / 2, H + Hfield / 2);
+		text[Score].setPosition(W + Wfield / 2, 50.f);
+		text[P1Score].setPosition(W + Wfield / 2 - 5.f, 85.f);
+		text[Colon].setPosition(W + Wfield / 2, 85.f);
+		text[P2Score].setPosition(W + Wfield / 2 + 10.f, 85.f);
+		text[BallsThisTurn].setPosition(W + Wfield / 2, 150.f);
+		text[BallsLeft].setPosition(W + Wfield / 2, 640.f);
+
+		for (auto &t : text)
+			t.setOrigin(float(int(t.getLocalBounds().width / 2)), float(int(t.getLocalBounds().height / 2 + TEXT_SIZE / 4)));
+
+		text[P1Score].setOrigin(float(int(text[P1Score].getLocalBounds().width)), float(int(text[P1Score].getLocalBounds().height / 2 + 10.f)));
+		text[P2Score].setOrigin(0.f, float(int(text[P2Score].getLocalBounds().height / 2 + 10.f)));
 }
 
 bool Game::isTurnEnded() {
@@ -379,13 +417,13 @@ void Game::endTurn()
 
 	if (winningPlayer) gameIsEnded = true;
 
+	if (gameIsEnded) playerScore[winningPlayer - 1]++;
+
 	if (whiteBall->life == false) {
 		whiteBall->x = WHITEBALL_START_X * W;
 		whiteBall->y = H / 2.f;
 		whiteBall->life = true;
 	}
-
-	for (auto &n : nBallsInThisTurn) n = 0;
 
 	turnEnded = true;
 }
@@ -418,19 +456,21 @@ void Game::gameDraw() {
 
 	if (gameIsEnded)
 		bottomField.setFillColor(winningPlayer % 2 ? P1_WIN_COLOR : P2_WIN_COLOR);
+
+	window->draw(bottomField);
+	window->draw(rightField);
 	
 	window->draw(sprites[0]); // drawing background
 	for (auto a : balls)
 		if (a->life) window->draw(*(a->circle)); // drawing balls
-
-	window->draw(bottomField);
-	window->draw(rightField);
-	window->draw(text);
+	
+	for (auto t : text)
+		window->draw(t);
 
 	for (int i = 1; i < GRAPHICS; i++)
 		if (turnEnded)
 			window->draw(sprites[i]); // drawing stick and white lines
-	
+
 	//Drawing holes for debugging purposes
 	/*
 	float xoffset = (W - 2.f*OFFSET_X) / 2;

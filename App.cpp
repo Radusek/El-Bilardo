@@ -5,7 +5,7 @@
 App::App() : window(VideoMode(W + Wfield, H + Hfield), "El Bilardo!", Style::Titlebar | Style::Close), playerScore{}
 {
 	window.setFramerateLimit(FRAMERATE);
-	game = new Game(&window);
+	game = new Game(&window, playerScore);
 }
 
 void App::run()
@@ -33,7 +33,7 @@ void App::run()
 				if (event.key.code == Keyboard::Space) {
 					if (game->gameIsEnded) {
 						delete game;
-						game = new Game(&window);
+						game = new Game(&window, playerScore);
 					}
 				}
 			}

@@ -12,7 +12,7 @@ public:
 	sf::RenderWindow* window;
 
 	sf::Font font;
-	sf::Text text;
+	sf::Text text[TEXTS];
 
 	Ball* whiteBall;
 	std::vector<Ball*> balls;
@@ -48,9 +48,10 @@ public:
 	int nBlackHole[2];
 
 	int winningPlayer;
+	int* playerScore;
 
 public:
-	Game(sf::RenderWindow* wnd);
+	Game(sf::RenderWindow* wnd, int* pS);
 
 	void cursorPosRelatedComputing(bool buttonRelease);
 	void leftMouseButtonPress();
