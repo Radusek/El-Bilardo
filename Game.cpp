@@ -162,7 +162,7 @@ void Game::leftMouseButtonPress()
 
 void Game::leftMouseButtonRelease()
 {
-	cursorPosRelatedComputing(true);
+	if (aiming) cursorPosRelatedComputing(true);
 }
 
 bool Game::isColliding(Ball* a, Ball* b) {
@@ -344,7 +344,12 @@ void Game::gameUpdate() {
 		dynamicCollision();
 		cursorPosRelatedComputing(false);
 		positionTheStick();
-		if (turnEnded && timeIsOut()) player1Turn = !player1Turn;
+		if (turnEnded && timeIsOut())
+		{
+			aiming = false;
+			hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
+			player1Turn = !player1Turn;
+		}
 		if (turnEnded == false && isTurnEnded() == true)
 			endTurn();
 		showText();
@@ -356,7 +361,7 @@ void Game::showText()
 	#pragma region turnInfo
 
 		if (gameIsEnded) {
-			text[TurnInfo].setString("Player " + std::to_string(winningPlayer) + " wins!");
+			text[TurnInfo].setString("Player " + std::to_string(winningPlayer) + " wins! (space)");
 		}
 		else if (turnEnded) {
 			String playerText;
@@ -404,7 +409,7 @@ void Game::showText()
 		s = "half left: " + std::to_string(nBallsLeft[HALF]) + "\nfull left: " + std::to_string(nBallsLeft[FULL]);
 		text[BallsLeft].setString(s);
 
-		s = std::to_string(int(time.asSeconds()) + 1) + "s";
+		s = std::to_string(int(time.asSeconds())) + "." + std::to_string(int((time.asSeconds() - int(time.asSeconds())) * 10.f)) + "s";
 		text[TimeLeft].setString(s);
 
 		text[TurnInfo].setPosition(W / 2, H + Hfield / 2);

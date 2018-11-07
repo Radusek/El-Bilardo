@@ -19,14 +19,16 @@ void App::run()
 			if (event.type == Event::Closed) window.close();
 			if (event.type == Event::MouseButtonPressed) {
 				if (event.mouseButton.button == Mouse::Left) {
-					game->leftMouseButtonPress();
+					if(game->gameIsEnded == false)
+						game->leftMouseButtonPress();
 				}
 			}
 
 			if (event.type == sf::Event::MouseButtonReleased) {
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
-					game->leftMouseButtonRelease();
+					if (game->gameIsEnded == false)
+						game->leftMouseButtonRelease();
 				}
 			}
 			if (event.type == sf::Event::KeyPressed) {
@@ -36,6 +38,10 @@ void App::run()
 						game = new Game(&window, playerScore);
 					}
 				}
+				if (event.key.code == Keyboard::Escape) {
+					window.close();
+				}
+
 			}
 		}
 
