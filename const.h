@@ -16,6 +16,13 @@
 #define FRICTION 0.9975f
 #define HOLE_SIZE 20.f
 
+#define HIT_BAR_WIDTH 40.f
+#define HIT_BAR_HEIGHT 300.f
+#define HIT_BAR_Y 250.f
+#define HIT_BAR_OUTLINE 2.f
+
+#define R_FIELD_OUTLINE 3.f
+
 #define GRAPHICS 3
 
 #define BACKGROUND 0
@@ -49,11 +56,16 @@
 #define BROWN Color(0x80, 0x10, 0x00, 0xFF)
 #define BLACK Color::Black
 
+#define LIGHT_GREY Color(200, 200, 200, 255)
+#define LIGHT_GREEN Color(100, 175, 100, 255)
+
 #define P1_TURN_COLOR Color(255, 150, 150, 255)
 #define P2_TURN_COLOR Color(150, 150, 255, 255)
 
 #define P1_WIN_COLOR Color(255, 100, 100, 255)
 #define P2_WIN_COLOR Color(100, 100, 255, 255)
+
+#define TURN_DURATION int(30e6)
 
 enum TxtEnum{
 	TurnInfo,
@@ -63,6 +75,7 @@ enum TxtEnum{
 	P2Score,
 	BallsThisTurn,
 	BallsLeft,
+	TimeLeft,
 	EnumSize
 };
 #define TEXTS EnumSize

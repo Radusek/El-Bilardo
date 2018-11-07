@@ -1,7 +1,24 @@
 #include "Game.h"
 
-Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn(true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS)
+Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn(true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS),
+hitBar{ Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
+		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
+		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y + HIT_BAR_HEIGHT), Color::Red),
+		Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y + HIT_BAR_HEIGHT), Color::Red)
+	  }
 {
+	time = microseconds(TURN_DURATION);
+
+	hitBarBackground.setSize(Vector2f(HIT_BAR_WIDTH + 2.f * HIT_BAR_OUTLINE, HIT_BAR_HEIGHT + 2.f * HIT_BAR_OUTLINE));
+	hitBarBackground.setOrigin(Vector2f(HIT_BAR_WIDTH / 2 + HIT_BAR_OUTLINE, HIT_BAR_HEIGHT / 2 + HIT_BAR_OUTLINE));
+	hitBarBackground.setPosition(Vector2f(W + Wfield / 2, HIT_BAR_Y + HIT_BAR_HEIGHT / 2));
+	hitBarBackground.setFillColor(Color::Black);
+
+	hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
+	hitBarCover.setOrigin(Vector2f(HIT_BAR_WIDTH / 2, 0.f));
+	hitBarCover.setPosition(Vector2f(W + Wfield / 2, HIT_BAR_Y));
+	hitBarCover.setFillColor(LIGHT_GREY);
+
 	for (int i = 0; i < 2; i++)
 	{
 		nBallsInThisTurn[i] = 0;
@@ -42,9 +59,13 @@ Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn(true), turnEnd
 	bottomField.setPosition(Vector2f(0.f, 0.f));
 	bottomField.setSize(Vector2f(float(W), float(H + Hfield)));
 
-	rightField.setFillColor(Color::White);
-	rightField.setPosition(Vector2f(float(W), 0.f));
-	rightField.setSize(Vector2f(float(Wfield), float(H + Hfield)));
+	rightFieldOutline.setFillColor(Color::Black);
+	rightFieldOutline.setPosition(Vector2f(float(W), 0.f));
+	rightFieldOutline.setSize(Vector2f(R_FIELD_OUTLINE, float(H + Hfield)));
+
+	rightField.setFillColor(LIGHT_GREEN);
+	rightField.setPosition(Vector2f(float(W) + R_FIELD_OUTLINE, 0.f));
+	rightField.setSize(Vector2f(float(Wfield - R_FIELD_OUTLINE), float(H + Hfield)));
 
 	//Creating walls
 	{
@@ -89,6 +110,8 @@ Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn(true), turnEnd
 			walls.push_back(wallLower);
 		}
 	}
+
+	clock.restart();
 }
 
 void Game::cursorPosRelatedComputing(bool buttonRelease)
@@ -100,9 +123,12 @@ void Game::cursorPosRelatedComputing(bool buttonRelease)
 		float fCurrentDist = sqrtf((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
 		float maxDist = MAX_AIMING_DISTANCE;
 		hitPower = 0.f;
+		hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
 		if (fCurrentDist > fDist) {
 			hitPower = (fCurrentDist - fDist) / maxDist;
 			if (hitPower > 1.f) hitPower = 1.f;
+			hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, (1.f - hitPower) * HIT_BAR_HEIGHT));
+
 			hitPower *= MAX_BALL_SPEED;
 
 			//getting moving direction
@@ -318,6 +344,7 @@ void Game::gameUpdate() {
 		dynamicCollision();
 		cursorPosRelatedComputing(false);
 		positionTheStick();
+		if (turnEnded && timeIsOut()) player1Turn = !player1Turn;
 		if (turnEnded == false && isTurnEnded() == true)
 			endTurn();
 		showText();
@@ -358,7 +385,7 @@ void Game::showText()
 
 	#pragma endregion
 
-	//TODO tekst po prawej
+	//tekst po prawej
 		std::string s = "SCORE";
 		text[Score].setString(s);
 
@@ -377,6 +404,9 @@ void Game::showText()
 		s = "half left: " + std::to_string(nBallsLeft[HALF]) + "\nfull left: " + std::to_string(nBallsLeft[FULL]);
 		text[BallsLeft].setString(s);
 
+		s = std::to_string(int(time.asSeconds()) + 1) + "s";
+		text[TimeLeft].setString(s);
+
 		text[TurnInfo].setPosition(W / 2, H + Hfield / 2);
 		text[Score].setPosition(W + Wfield / 2, 50.f);
 		text[P1Score].setPosition(W + Wfield / 2 - 5.f, 85.f);
@@ -384,6 +414,7 @@ void Game::showText()
 		text[P2Score].setPosition(W + Wfield / 2 + 10.f, 85.f);
 		text[BallsThisTurn].setPosition(W + Wfield / 2, 150.f);
 		text[BallsLeft].setPosition(W + Wfield / 2, 640.f);
+		text[TimeLeft].setPosition(W + Wfield / 2, 590);
 
 		for (auto &t : text)
 			t.setOrigin(float(int(t.getLocalBounds().width / 2)), float(int(t.getLocalBounds().height / 2 + TEXT_SIZE / 4)));
@@ -425,7 +456,10 @@ void Game::endTurn()
 		whiteBall->life = true;
 	}
 
+	hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
 	turnEnded = true;
+	time = microseconds(TURN_DURATION);
+	clock.restart();
 }
 
 void Game::positionTheStick() {
@@ -451,6 +485,22 @@ void Game::positionTheStick() {
 	}
 }
 
+bool Game::timeIsOut()
+{
+	Time t = clock.getElapsedTime();
+	Int64 us = time.asMicroseconds() - t.asMicroseconds();
+
+	clock.restart();
+	if (us <= 0) {
+		time = microseconds(TURN_DURATION);
+		return true;
+	}
+	else {
+		time = microseconds(us);
+		return false;
+	}
+}
+
 void Game::gameDraw() {
 	bottomField.setFillColor(player1Turn ? P1_TURN_COLOR : P2_TURN_COLOR);
 
@@ -458,6 +508,7 @@ void Game::gameDraw() {
 		bottomField.setFillColor(winningPlayer % 2 ? P1_WIN_COLOR : P2_WIN_COLOR);
 
 	window->draw(bottomField);
+	window->draw(rightFieldOutline);
 	window->draw(rightField);
 	
 	window->draw(sprites[0]); // drawing background
@@ -466,6 +517,10 @@ void Game::gameDraw() {
 	
 	for (auto t : text)
 		window->draw(t);
+
+	window->draw(hitBarBackground);
+	window->draw(hitBar, 4, Quads);
+	window->draw(hitBarCover);
 
 	for (int i = 1; i < GRAPHICS; i++)
 		if (turnEnded)

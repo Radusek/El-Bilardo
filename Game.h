@@ -11,8 +11,15 @@ class Game {
 public:
 	sf::RenderWindow* window;
 
+	Clock clock;
+	Time time;
+
 	sf::Font font;
 	sf::Text text[TEXTS];
+
+	RectangleShape hitBarBackground;
+	Vertex hitBar[4];
+	RectangleShape hitBarCover;
 
 	Ball* whiteBall;
 	std::vector<Ball*> balls;
@@ -28,6 +35,7 @@ public:
 
 	RectangleShape bottomField;
 	RectangleShape rightField;
+	RectangleShape rightFieldOutline;
 
 	SoundBuffer buffer;
 	Sound sound;
@@ -66,6 +74,7 @@ public:
 	bool isTurnEnded();
 	void endTurn();
 	void positionTheStick();
+	bool timeIsOut();
 	void gameDraw();
 	void setWhiteBallSpeed(Vector2f vec);
 	Vector2f getWhiteBallPosition();
