@@ -13,7 +13,7 @@
 #define CENTRAL_HOLE_OFFSET 20.f
 #define BALLS 15
 #define RADIUS 14.f
-#define FRICTION 0.9975f
+#define FRICTION 0.9977f
 #define HOLE_SIZE 20.f
 
 #define HIT_BAR_WIDTH 40.f
@@ -30,8 +30,8 @@
 #define HELPER 2
 
 #define WHITEBALL_START_X 0.275f
-#define MIN_BALL_SPEED 0.04f
-#define MAX_BALL_SPEED 5.5f
+#define MIN_BALL_SPEED 0.0275f
+#define MAX_BALL_SPEED 5.7f
 
 #define MAX_AIMING_DISTANCE 100.f
 
