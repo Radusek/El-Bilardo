@@ -1,5 +1,3 @@
-- Change blue color (low visibility with black)
-- Player1 should not always start the game
 - Possibility to pause the game
 - Possibility to restart the game and the whole match whenever you want to
 - Replay system

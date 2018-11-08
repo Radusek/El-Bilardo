@@ -48,12 +48,12 @@
 #define N_HOLES 6
 
 #define YELLOW Color::Yellow
-#define BLUE Color::Blue
+#define BLUE Color(70, 70, 240, 255)
 #define RED Color::Red
 #define MAGENTA Color::Magenta
 #define ORANGE Color(0xFF, 0x80, 0x00, 0xFF)
 #define GREEN Color::Green
-#define BROWN Color(0x80, 0x10, 0x00, 0xFF)
+#define BROWN Color(0xA0, 0x20, 0x00, 0xFF)
 #define BLACK Color::Black
 
 #define LIGHT_GREY Color(200, 200, 200, 255)

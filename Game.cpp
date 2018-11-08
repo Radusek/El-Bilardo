@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn(true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS),
+Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn((pS[PLAYER_1] + pS[PLAYER_2]) % 2 ? false : true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS),
 hitBar{ Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
 		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
 		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y + HIT_BAR_HEIGHT), Color::Red),
