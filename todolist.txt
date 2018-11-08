@@ -1,10 +1,10 @@
 - Change blue color (low visibility with black)
-- Add mass atribute to balls
+- Player1 should not always start the game
 - Possibility to pause the game
 - Possibility to restart the game and the whole match whenever you want to
-- Player1 should not always start the game
-- Fun additions to the gameplay / different game types
 - Replay system
+- Add mass atribute to balls
+- Fun additions to the gameplay / different game types
 - Moving ball animation
 - Disappearing ball animation
 - Possibility to play with keyboard
