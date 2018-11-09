@@ -6,6 +6,7 @@ App::App() : window(VideoMode(W + Wfield, H + Hfield), "El Bilardo!", Style::Tit
 {
 	window.setFramerateLimit(FRAMERATE);
 	game = new Game(&window, playerScore);
+	window.setKeyRepeatEnabled(false);
 }
 
 void App::run()
@@ -19,11 +20,10 @@ void App::run()
 			if (event.type == Event::Closed) window.close();
 			if (event.type == Event::MouseButtonPressed) {
 				if (event.mouseButton.button == Mouse::Left) {
-					if(game->gameIsEnded == false)
+					if (game->gameIsEnded == false)
 						game->leftMouseButtonPress();
 				}
 			}
-
 			if (event.type == sf::Event::MouseButtonReleased) {
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
@@ -37,11 +37,15 @@ void App::run()
 						delete game;
 						game = new Game(&window, playerScore);
 					}
+					else
+					{
+						game->gamePaused = !(game->gamePaused);
+						game->clock.restart();
+					}
 				}
 				if (event.key.code == Keyboard::Escape) {
 					window.close();
 				}
-
 			}
 		}
 

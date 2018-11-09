@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn((pS[PLAYER_1] + pS[PLAYER_2]) % 2 ? false : true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS),
+Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn((pS[PLAYER_1] + pS[PLAYER_2]) % 2 ? false : true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS), gamePaused(false),
 hitBar{ Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
 		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
 		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y + HIT_BAR_HEIGHT), Color::Red),
@@ -332,7 +332,7 @@ void Game::holeCheck() {
 }
 
 void Game::gameUpdate() {
-	if (gameIsEnded == false) {
+	if (gameIsEnded == false && gamePaused == false) {
 		for (auto a : balls) {
 			a->x += a->dx;
 			a->y += a->dy;
@@ -528,7 +528,7 @@ void Game::gameDraw() {
 	window->draw(hitBarCover);
 
 	for (int i = 1; i < GRAPHICS; i++)
-		if (turnEnded)
+		if (turnEnded && gamePaused == false)
 			window->draw(sprites[i]); // drawing stick and white lines
 
 	//Drawing holes for debugging purposes
@@ -564,6 +564,22 @@ void Game::gameDraw() {
 		//	window->draw(c1);
 		//	window->draw(c2);
 		//}
+
+	if (gamePaused) {
+		RectangleShape pauseScreen;
+		pauseScreen.setSize(Vector2f(W, H));
+		pauseScreen.setFillColor(Color(0, 0, 0, 215));
+
+		Text pauseText;
+		pauseText.setFont(font);
+		pauseText.setString("PAUSED");
+		pauseText.setFillColor(Color(255, 255, 255, 215));
+		pauseText.setPosition(Vector2f(float(W / 2), float(H / 2)));
+		pauseText.setOrigin(float(int(pauseText.getLocalBounds().width / 2)), float(int(pauseText.getLocalBounds().height / 2 + 10.f)));
+
+		window->draw(pauseScreen);
+		window->draw(pauseText);
+	}
 }
 
 void Game::setWhiteBallSpeed(Vector2f vec) {

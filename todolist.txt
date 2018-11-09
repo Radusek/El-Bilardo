@@ -1,4 +1,3 @@
-- Possibility to pause the game
 - Possibility to restart the game and the whole match whenever you want to
 - Replay system
 - Add mass atribute to balls

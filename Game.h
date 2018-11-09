@@ -46,6 +46,7 @@ public:
 	bool turnEnded;
 	bool aiming;
 	bool gameIsEnded;
+	bool gamePaused;
 
 	float fDist;
 	float hitPower;
