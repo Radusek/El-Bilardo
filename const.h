@@ -7,13 +7,15 @@
 #define FULL 0
 #define HALF 1
 
-#define FRAMERATE 300
+#define FRAMERATE 240
 #define OFFSET_X 59.f
 #define OFFSET_Y 59.f
 #define CENTRAL_HOLE_OFFSET 20.f
 #define BALLS 15
+#define WALLS 18
 #define RADIUS 14.f
-#define FRICTION 0.9977f
+#define FRICTION 0.9976f
+#define LINEAR_FRICTION 2000.f
 #define HOLE_SIZE 20.f
 
 #define HIT_BAR_WIDTH 40.f
@@ -30,7 +32,7 @@
 #define HELPER 2
 
 #define WHITEBALL_START_X 0.275f
-#define MIN_BALL_SPEED 0.0275f
+#define MIN_BALL_SPEED 0.00275f
 #define MAX_BALL_SPEED 5.7f
 
 #define MAX_AIMING_DISTANCE 100.f
@@ -81,3 +83,83 @@ enum TxtEnum{
 #define TEXTS EnumSize
 
 const unsigned int W = 1085, Wfield = 150, H = 600, Hfield = 80;
+
+
+#define P1_1_X 66.f
+#define P1_1_Y 28.f
+
+#define P1_2_X 96.f
+#define P1_2_Y 58.f
+
+#define P1_3_X 515.f
+#define P1_3_Y 58.f
+
+#define P1_4_X 525.f
+#define P1_4_Y 28.f
+
+
+#define P2_1_X W - P1_1_X
+#define P2_1_Y P1_1_Y
+
+#define P2_2_X W - P1_2_X
+#define P2_2_Y P1_2_Y
+
+#define P2_3_X W - P1_3_X
+#define P2_3_Y P1_3_Y
+
+#define P2_4_X W - P1_4_X
+#define P2_4_Y P1_4_Y
+
+
+#define P3_1_X P1_1_X
+#define P3_1_Y H - P1_1_Y
+
+#define P3_2_X P1_2_X
+#define P3_2_Y H - P1_2_Y
+
+#define P3_3_X P1_3_X
+#define P3_3_Y H - P1_3_Y
+
+#define P3_4_X P1_4_X
+#define P3_4_Y H - P1_4_Y
+
+
+#define P4_1_X W - P1_1_X
+#define P4_1_Y H - P1_1_Y
+
+#define P4_2_X W - P1_2_X
+#define P4_2_Y H - P1_2_Y
+
+#define P4_3_X W - P1_3_X
+#define P4_3_Y H - P1_3_Y
+
+#define P4_4_X W - P1_4_X
+#define P4_4_Y H - P1_4_Y
+
+
+
+
+#define P5_1_X 28.f
+#define P5_1_Y 65.f
+
+#define P5_2_X 58.f
+#define P5_2_Y 95.f
+
+#define P5_3_X 58.f
+#define P5_3_Y 505.f
+
+#define P5_4_X 28.f
+#define P5_4_Y 535.f
+
+
+#define P6_1_X W - P5_1_X
+#define P6_1_Y P5_1_Y
+
+#define P6_2_X W - P5_2_X
+#define P6_2_Y P5_2_Y
+
+#define P6_3_X W - P5_3_X
+#define P6_3_Y P5_3_Y
+
+#define P6_4_X W - P5_4_X
+#define P6_4_Y P5_4_Y

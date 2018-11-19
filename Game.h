@@ -17,6 +17,9 @@ public:
 	sf::Font font;
 	sf::Text text[TEXTS];
 
+	RectangleShape pauseScreen;
+	Text pauseText;
+
 	RectangleShape hitBarBackground;
 	Vertex hitBar[4];
 	RectangleShape hitBarCover;

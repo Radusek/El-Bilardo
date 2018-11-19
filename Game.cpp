@@ -1,7 +1,8 @@
 #include "Game.h"
 
 Game::Game(RenderWindow* wnd, int* pS) : window(wnd), player1Turn((pS[PLAYER_1] + pS[PLAYER_2]) % 2 ? false : true), turnEnded(true), aiming(false), playersHaveColors(false), winningPlayer(0), gameIsEnded(false), playerScore(pS), gamePaused(false),
-hitBar{ Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
+hitBar{ 
+		Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
 		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Yellow),
 		Vertex(Vector2f(W + Wfield / 2 + HIT_BAR_WIDTH / 2, HIT_BAR_Y + HIT_BAR_HEIGHT), Color::Red),
 		Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y + HIT_BAR_HEIGHT), Color::Red)
@@ -33,7 +34,6 @@ hitBar{ Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Y
 	}
 
 	text[TurnInfo].setCharacterSize(TEXT_SIZE);
-	//text[BALLS_THIS_TURN].setCharacterSize(TEXT_SIZE);
 
 	buffer.loadFromFile("wav/hit.wav");
 	sound.setBuffer(buffer);
@@ -67,47 +67,45 @@ hitBar{ Vertex(Vector2f(W + Wfield / 2 - HIT_BAR_WIDTH / 2, HIT_BAR_Y), Color::Y
 	rightField.setPosition(Vector2f(float(W) + R_FIELD_OUTLINE, 0.f));
 	rightField.setSize(Vector2f(float(Wfield - R_FIELD_OUTLINE), float(H + Hfield)));
 
+	pauseScreen.setSize(Vector2f(float(W), float(H)));
+	pauseScreen.setFillColor(Color(0, 0, 0, 215));
+
+	pauseText.setFont(font);
+	pauseText.setString("PAUSED");
+	pauseText.setFillColor(Color(255, 255, 255, 215));
+	pauseText.setPosition(Vector2f(float(W / 2), float(H / 2)));
+	pauseText.setOrigin(float(int(pauseText.getLocalBounds().width / 2)), float(int(pauseText.getLocalBounds().height / 2 + 10.f)));
+
+
 	//Creating walls
 	{
 		float radius = 1.f;
 
-		//Creating upper and lower walls
-		for (int i = 0; i < 2; i++)
+		std::pair<Vector2f, Vector2f> wallPosition[WALLS] = {
+			{ Vector2f(P1_1_X, P1_1_Y), Vector2f(P1_2_X, P1_2_Y) },
+			{ Vector2f(P1_2_X, P1_2_Y), Vector2f(P1_3_X, P1_3_Y) },
+			{ Vector2f(P1_3_X, P1_3_Y), Vector2f(P1_4_X, P1_4_Y) },
+			{ Vector2f(P2_1_X, P2_1_Y), Vector2f(P2_2_X, P2_2_Y) },
+			{ Vector2f(P2_2_X, P2_2_Y), Vector2f(P2_3_X, P2_3_Y) },
+			{ Vector2f(P2_3_X, P2_3_Y), Vector2f(P2_4_X, P2_4_Y) },
+			{ Vector2f(P3_1_X, P3_1_Y), Vector2f(P3_2_X, P3_2_Y) },
+			{ Vector2f(P3_2_X, P3_2_Y), Vector2f(P3_3_X, P3_3_Y) },
+			{ Vector2f(P3_3_X, P3_3_Y), Vector2f(P3_4_X, P3_4_Y) },
+			{ Vector2f(P4_1_X, P4_1_Y), Vector2f(P4_2_X, P4_2_Y) },
+			{ Vector2f(P4_2_X, P4_2_Y), Vector2f(P4_3_X, P4_3_Y) },
+			{ Vector2f(P4_3_X, P4_3_Y), Vector2f(P4_4_X, P4_4_Y) },
+			{ Vector2f(P5_1_X, P5_1_Y), Vector2f(P5_2_X, P5_2_Y) },
+			{ Vector2f(P5_2_X, P5_2_Y), Vector2f(P5_3_X, P5_3_Y) },
+			{ Vector2f(P5_3_X, P5_3_Y), Vector2f(P5_4_X, P5_4_Y) },
+			{ Vector2f(P6_1_X, P6_1_Y), Vector2f(P6_2_X, P6_2_Y) },
+			{ Vector2f(P6_2_X, P6_2_Y), Vector2f(P6_3_X, P6_3_Y) },
+			{ Vector2f(P6_3_X, P6_3_Y), Vector2f(P6_4_X, P6_4_Y) },
+		};
+
+		for (auto pos : wallPosition)
 		{
-			float xDiff = W / 2 - OFFSET_X - 64.f;
-			float yDiff = H - 2 * OFFSET_Y + 2 * radius;
-			float tempX = OFFSET_X + radius + 36.f;
-
-			Wall* wallLeft = new Wall(tempX, OFFSET_Y - radius + i * yDiff, tempX + xDiff, OFFSET_Y - radius + i * yDiff, radius);
-			Wall* wallLeftSideHole = new Wall(tempX, OFFSET_Y - radius + i * yDiff, tempX - 30.f, OFFSET_Y - radius - 30.f + i * (yDiff + 60.f), radius);
-			Wall* wallLeftCenterHole = new Wall(tempX + xDiff, OFFSET_Y - radius + i * yDiff, tempX + xDiff + 10.f, OFFSET_Y - radius - 30.f + i * (yDiff + 60.f), radius);
-
-			Wall* wallRight = new Wall(W - tempX, OFFSET_Y - radius + i * yDiff, W - tempX - xDiff, OFFSET_Y - radius + i * yDiff, radius);
-			Wall* wallRightSideHole = new Wall(W - tempX, OFFSET_Y - radius + i * yDiff, W - (tempX - 30.f), OFFSET_Y - radius - 30.f + i * yDiff + i * 60.f, radius);
-			Wall* wallRightCenterHole = new Wall(W - tempX - xDiff, OFFSET_Y - radius + i * yDiff, W - tempX - xDiff - 10.f, OFFSET_Y - radius - 30.f + i * (yDiff + 60.f), radius);
-
-			walls.push_back(wallLeft);
-			walls.push_back(wallLeftSideHole);
-			walls.push_back(wallLeftCenterHole);
-			walls.push_back(wallRight);
-			walls.push_back(wallRightSideHole);
-			walls.push_back(wallRightCenterHole);
-		}
-
-		//Creating side walls
-		for (int i = 0; i < 2; i++)
-		{
-			float xDiff = W - 2 * OFFSET_X + 2 * radius;
-			float tempX = OFFSET_X - radius;
-			float tempY = OFFSET_Y + 36.f;
-
-			Wall* wall = new Wall(tempX + i * xDiff, tempY, tempX + i * xDiff, H - tempY, radius);
-			Wall* wallUpper = new Wall(tempX + i * xDiff, tempY, tempX - 30.f + i * (xDiff + 60.f), tempY - 30.f, radius);
-			Wall* wallLower = new Wall(tempX + i * xDiff, H - tempY, tempX - 30.f + i * (xDiff + 60.f), H - (tempY - 30.f), radius);
-
+			Wall* wall = new Wall(pos.first.x, pos.first.y, pos.second.x, pos.second.y, radius);
 			walls.push_back(wall);
-			walls.push_back(wallUpper);
-			walls.push_back(wallLower);
 		}
 	}
 
@@ -125,8 +123,11 @@ void Game::cursorPosRelatedComputing(bool buttonRelease)
 		hitPower = 0.f;
 		hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
 		if (fCurrentDist > fDist) {
+
 			hitPower = (fCurrentDist - fDist) / maxDist;
-			if (hitPower > 1.f) hitPower = 1.f;
+
+			if (hitPower > 1.f)
+				hitPower = 1.f;
 			hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, (1.f - hitPower) * HIT_BAR_HEIGHT));
 
 			hitPower *= MAX_BALL_SPEED;
@@ -137,6 +138,7 @@ void Game::cursorPosRelatedComputing(bool buttonRelease)
 
 			//normalizing direction vector
 			float length = sqrtf(speed.x*speed.x + speed.y*speed.y);
+
 			dirVect.x = speed.x / length; dirVect.y = speed.y / length;
 			speed.x *= hitPower / length; speed.y *= hitPower / length;
 
@@ -261,12 +263,18 @@ void Game::dynamicCollision() {
 void Game::friction() {
 	for (auto a : balls)
 	{
-		if (sqrtf(a->dx*a->dx + a->dy*a->dy) < MIN_BALL_SPEED) {
+		float vel = sqrtf(a->dx*a->dx + a->dy*a->dy);
+		if (vel < MIN_BALL_SPEED) {
 			a->dx = 0;
 			a->dy = 0;
 		}
-		a->dx *= FRICTION;
-		a->dy *= FRICTION;
+		else {
+			a->dx -= (a->dx / vel) / LINEAR_FRICTION;
+			a->dy -= (a->dy / vel) / LINEAR_FRICTION;
+			a->dx *= FRICTION;
+			a->dy *= FRICTION;
+		}
+		
 	}
 }
 
@@ -566,17 +574,6 @@ void Game::gameDraw() {
 		//}
 
 	if (gamePaused) {
-		RectangleShape pauseScreen;
-		pauseScreen.setSize(Vector2f(W, H));
-		pauseScreen.setFillColor(Color(0, 0, 0, 215));
-
-		Text pauseText;
-		pauseText.setFont(font);
-		pauseText.setString("PAUSED");
-		pauseText.setFillColor(Color(255, 255, 255, 215));
-		pauseText.setPosition(Vector2f(float(W / 2), float(H / 2)));
-		pauseText.setOrigin(float(int(pauseText.getLocalBounds().width / 2)), float(int(pauseText.getLocalBounds().height / 2 + 10.f)));
-
 		window->draw(pauseScreen);
 		window->draw(pauseText);
 	}

@@ -20,14 +20,14 @@ void App::run()
 			if (event.type == Event::Closed) window.close();
 			if (event.type == Event::MouseButtonPressed) {
 				if (event.mouseButton.button == Mouse::Left) {
-					if (game->gameIsEnded == false)
+					if (game->gameIsEnded == false && game->gamePaused == false)
 						game->leftMouseButtonPress();
 				}
 			}
 			if (event.type == sf::Event::MouseButtonReleased) {
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
-					if (game->gameIsEnded == false)
+					if (game->gameIsEnded == false && game->gamePaused == false)
 						game->leftMouseButtonRelease();
 				}
 			}
@@ -40,6 +40,8 @@ void App::run()
 					else
 					{
 						game->gamePaused = !(game->gamePaused);
+						game->aiming = false;
+						game->hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
 						game->clock.restart();
 					}
 				}
