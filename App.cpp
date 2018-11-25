@@ -41,32 +41,40 @@ void App::run()
 					{
 						game->gamePaused = !(game->gamePaused);
 						game->aiming = false;
-						game->hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
+						if(game->turnEnded)
+							game->hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
 						game->clock.restart();
 					}
 				}
 				if (event.key.code == Keyboard::Escape) {
-					window.close();
+					if (game->ackWindowActive)
+					{
+						closeAckWindow();
+						continue;
+					}
 
+					window.close();
 				}
 				if (event.key.code == Keyboard::R)
 				{
 					game->ackWindowActive = true;
 
+					game->gamePaused = true;
+					game->aiming = false;
 				}
 				if (event.key.code == Keyboard::Y)
 				{
-					if (game->ackWindowActive) {
-						delete game;
-						game = new Game(&window, playerScore);
-					}
-
+					if (game->ackWindowActive) 
+						gameRestart(ROUND);
+				}
+				if (event.key.code == Keyboard::X)
+				{
+					if (game->ackWindowActive)
+						gameRestart(MATCH);
 				}
 				if (event.key.code == Keyboard::N)
 				{
-					if (game->ackWindowActive) 
-						game->ackWindowActive = false;
-
+					closeAckWindow();
 				}
 			}
 		}
@@ -79,6 +87,29 @@ void App::run()
 		game->gameDraw();
 		window.display();
 	}
+}
+
+void App::gameRestart(bool resetAll)
+{
+	game->ackWindowActive = false;
+	delete game;
+	game = new Game(&window, playerScore);
+
+	if (resetAll) 
+	{
+		playerScore[PLAYER_1] = 0;
+		playerScore[PLAYER_2] = 0;
+	}
+}
+
+void App::closeAckWindow()
+{
+	game->ackWindowActive = false;
+
+	game->gamePaused = false;
+	if (game->turnEnded)
+		game->hitBarCover.setSize(Vector2f(HIT_BAR_WIDTH, HIT_BAR_HEIGHT));
+	game->clock.restart();
 }
 
 

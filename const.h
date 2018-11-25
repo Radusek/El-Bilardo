@@ -69,6 +69,9 @@
 
 #define TURN_DURATION int(30e6)
 
+#define ROUND false
+#define MATCH true
+
 enum TxtEnum{
 	TurnInfo,
 	Score,

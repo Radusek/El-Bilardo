@@ -13,6 +13,8 @@ public:
 	App();
 	
 	void run();
+	void gameRestart(bool resetAll);
+	void closeAckWindow();
 
 	~App();
 };

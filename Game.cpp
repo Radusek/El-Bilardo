@@ -539,6 +539,7 @@ void Game::gameDraw() {
 		if (turnEnded && gamePaused == false)
 			window->draw(sprites[i]); // drawing stick and white lines
 
+
 	//Drawing holes for debugging purposes
 	/*
 	float xoffset = (W - 2.f*OFFSET_X) / 2;
@@ -577,6 +578,9 @@ void Game::gameDraw() {
 		window->draw(pauseScreen);
 		window->draw(pauseText);
 	}
+
+	if (ackWindowActive)
+		window->draw(ackWindow);
 }
 
 void Game::setWhiteBallSpeed(Vector2f vec) {

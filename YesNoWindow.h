@@ -4,7 +4,7 @@
 
 using namespace sf;
 
-struct YesNoWindow
+struct YesNoWindow : public Drawable
 {
 public:
 	RectangleShape windowBase;
@@ -13,6 +13,9 @@ public:
 
 public:
 	YesNoWindow();
+
+	void draw(RenderTarget& target, RenderStates states) const;
+
 	~YesNoWindow();
 };
 
