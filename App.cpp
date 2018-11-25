@@ -47,6 +47,26 @@ void App::run()
 				}
 				if (event.key.code == Keyboard::Escape) {
 					window.close();
+
+				}
+				if (event.key.code == Keyboard::R)
+				{
+					game->ackWindowActive = true;
+
+				}
+				if (event.key.code == Keyboard::Y)
+				{
+					if (game->ackWindowActive) {
+						delete game;
+						game = new Game(&window, playerScore);
+					}
+
+				}
+				if (event.key.code == Keyboard::N)
+				{
+					if (game->ackWindowActive) 
+						game->ackWindowActive = false;
+
 				}
 			}
 		}

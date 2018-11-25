@@ -5,6 +5,7 @@
 #include "const.h"
 #include "Ball.h"
 #include "Wall.h"
+#include "YesNoWindow.h"
 using namespace sf;
 
 class Game {
@@ -51,6 +52,9 @@ public:
 	bool gameIsEnded;
 	bool gamePaused;
 
+	bool ackWindowActive;
+	int ackWindowResult;
+
 	float fDist;
 	float hitPower;
 	Vector2f dirVect;
@@ -61,6 +65,8 @@ public:
 
 	int winningPlayer;
 	int* playerScore;
+
+	YesNoWindow ackWindow;
 
 public:
 	Game(sf::RenderWindow* wnd, int* pS);
